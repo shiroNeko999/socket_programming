@@ -1,0 +1,35 @@
+import socket
+
+def start_client(host='localhost', port=12345):
+    # Create a TCP socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Connect to the server
+    client_socket.connect((host, port))
+
+    # Receive and print server messages
+    while True:
+        try:
+            # Receive message from server
+            server_message = client_socket.recv(1024).decode()
+            if not server_message:
+                break
+            
+            print(server_message)  # Display server messages
+            
+            # If prompted, enter group ID and send to server
+            if server_message.startswith("Enter group ID to join:"):
+                group_id = input()  # Get group ID from user
+                client_socket.send(group_id.encode())
+            else:
+                # If not a prompt, it means the server is sending a message from the chat
+                message_to_send = input("Your message: ")
+                client_socket.send(message_to_send.encode())
+        
+        except Exception as e:
+            print(f"Error: {e}")
+            break
+    
+    client_socket.close()
+
+# Start the client
+start_client()
